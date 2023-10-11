@@ -1,3 +1,4 @@
+// const { Chart } = require("chart.js")
 async function main() {
   const timeChartCanvas = document.querySelector("#time-chart");
   const highestPriceChartCanvas = document.querySelector(
@@ -14,6 +15,7 @@ async function main() {
   const { GME, MSFT, DIS, BNTX } = mockData;
 
   const stocks = [GME, MSFT, DIS, BNTX];
+
   function getColor(stock) {
     if (stock === "GME") {
       return "rgba(61, 161, 61, 0.7)";
@@ -29,10 +31,12 @@ async function main() {
     }
   }
 
+  stocks.forEach((stock) => stock.values.reverse());
+
   new Chart(timeChartCanvas.getContext("2d"), {
     type: "line",
     data: {
-      labels: stocks[0].values.reverse().map((value) => value.datetime),
+      labels: stocks[0].values.map((value) => value.datetime),
       datasets: stocks.map((stock) => ({
         label: stock.meta.symbol,
         data: stock.values.map((value) => parseFloat(value.high)),
@@ -41,21 +45,34 @@ async function main() {
       })),
     },
   });
+
+  function findHighestValue(values) {
+    let highest = values[0].high;
+    for (let i = 1; i < values.length; i++) {
+      if (highest < values[i].high) {
+        highest = values[i].high;
+      }
+    }
+    return highest;
+  }
 
   new Chart(highestPriceChartCanvas.getContext("2d"), {
     type: "bar",
     data: {
-      labels: stocks[0].values.map((value) => value.mockData),
-      datasets: stocks.map((stock) => ({
-        label: stock.meta.symbol,
-        data: stock.values.map((value) => parseFloat(value.high)),
-        backgroundColor: getColor(stock.meta.symbol),
-        borderColor: getColor(stock.meta.symbol),
-      })),
+      labels: stocks.map((stock) => stock.meta.symbol),
+      datasets: [
+        {
+          label: "highest",
+          data: stocks.map((stock) => findHighestValue(stock.values)),
+          backgroundColor: stocks.map((stock) => getColor(stock.meta.symbol)),
+          borderColor: stocks.map((stock) => getColor(stock.meta.symbol)),
+        },
+      ],
     },
   });
 
-  console.log(stocks[0].values.map);
+  console.log(stocks[0].values);
+  stocks[0].values.map((value) => value._);
 }
 
 main();
