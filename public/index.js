@@ -30,7 +30,7 @@ async function main() {
       return "rgba(166, 43, 158, 0.7)";
     }
   }
-
+// switching the stock values to be the opposite layout 
   stocks.forEach((stock) => stock.values.reverse());
 
   new Chart(timeChartCanvas.getContext("2d"), {
@@ -45,7 +45,7 @@ async function main() {
       })),
     },
   });
-
+// this function is creating a loop to get the highest values for each stock 
   function findHighestValue(values) {
     let highest = values[0].high;
     for (let i = 1; i < values.length; i++) {
@@ -73,6 +73,30 @@ async function main() {
 
   console.log(stocks[0].values);
   stocks[0].values.map((value) => value._);
+  // in this function i am making the the high values be adressed and changed from strings to numbers
+
+  function findAverage(values) {
+    let total = 0;
+
+    values.forEach((value) => {
+        total += parseFloat(value.high);
+    });
+    return total / values.length;
+}
+
+new Chart(averagePriceChartCanvas.getContext('2d'), {
+    type: 'pie',
+    data: {
+        labels: stocks.map(stock => stock.meta.symbol),
+        datasets: [{
+            label: 'average',
+            data: stocks.map((stock) => findAverage(stock.values)),
+            backgroundColor:  stocks.map((stock) => getColor(stock.meta.symbol)),
+            borderColor: stocks.map((stock) => getColor(stock.meta.values)),
+        }]
+    }
+})
+
 }
 
 main();
